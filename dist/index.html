@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dolf Training Center — Accredited Educational & Digital Expertise</title>
+  <meta name="description" content="Dolf Training Center (DTC) — the training arm of Dolf Technologies. Accredited training programs that combine practical expertise and modern technologies for individuals and organizations." />
+  <meta name="theme-color" content="#0055e2" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Dolf Training Center" />
+  <meta property="og:description" content="Accredited Educational & Digital Expertise." />
+  <meta property="og:image" content="assets/logo/logo-stacked.png" />
+
+  <link rel="icon" type="image/png" href="assets/logo/logo-mark.png" />
+  <link rel="apple-touch-icon" href="assets/logo/logo-mark.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main" data-i18n="a11y.skip">Skip to content</a>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="header" id="top">
+    <div class="container header__inner">
+      <a class="brand" href="#home" aria-label="Dolf Training Center — Home">
+        <img class="brand__logo brand__logo--full brand__logo--en" src="assets/logo/logo-en.png" alt="Dolf Training Center" />
+        <img class="brand__logo brand__logo--full brand__logo--ar" src="assets/logo/logo-ar.png" alt="مركز دلف للتدريب" />
+        <img class="brand__logo brand__logo--mark" src="assets/logo/logo-mark.png" alt="DTC" />
+      </a>
+
+      <nav class="nav" id="primary-nav" aria-label="Primary">
+        <ul class="nav__list">
+          <li><a class="nav__link is-active" href="#home" data-i18n="nav.home">Home</a></li>
+          <li class="nav__item has-dropdown">
+            <a class="nav__link" href="#about" data-i18n="nav.about">Who We Are</a>
+            <button class="nav__caret" aria-label="Toggle submenu" aria-expanded="false">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <ul class="dropdown">
+              <li><a href="#about" data-acc-target="vision" data-i18n="about.vision">Our Vision</a></li>
+              <li><a href="#about" data-acc-target="message" data-i18n="about.message">Our Message</a></li>
+              <li><a href="#about" data-acc-target="values" data-i18n="about.values">Our Values</a></li>
+            </ul>
+          </li>
+          <li><a class="nav__link" href="#programs" data-i18n="nav.programs">Training Programs</a></li>
+          <li><a class="nav__link" href="#solutions" data-i18n="nav.solutions">Solutions</a></li>
+          <li><a class="nav__link" href="#faqs" data-i18n="nav.faqs">FAQs</a></li>
+          <li><a class="nav__link" href="#contact" data-i18n="nav.contact">Get in Touch</a></li>
+        </ul>
+      </nav>
+
+      <div class="header__actions">
+        <button class="lang-toggle" id="langToggle" type="button" aria-label="Switch language">
+          <svg class="lang-toggle__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/>
+          </svg>
+          <span class="lang-toggle__label" data-i18n="lang.switch">العربية</span>
+        </button>
+        <button class="hamburger" id="hamburger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="primary-nav">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="nav-scrim" id="navScrim" hidden></div>
+
+  <main id="main">
+    <!-- ===================== HERO ===================== -->
+    <section class="hero section" id="home">
+      <div class="container hero__inner">
+        <div class="hero__content reveal">
+          <span class="eyebrow" data-i18n="hero.eyebrow">Dolf Technologies · Training Arm</span>
+          <h1 id="heroTitle" class="hero__title" data-i18n-html="hero.title">
+            <span class="t-bold">Dolf</span> <span class="t-light">Training Center</span><span class="t-dot">.</span>
+          </h1>
+          <p id="heroSubtitle" class="hero__subtitle" data-i18n="hero.subtitle">Accredited Educational &amp; Digital Expertise</p>
+          <p id="heroText" class="hero__text" data-i18n="hero.text">Dolf Training Center, the training arm of Dolf Technologies, offers accredited programs that combine practical expertise and modern technologies to develop the skills of individuals and organizations.</p>
+          <div class="hero__actions">
+            <a id="heroCtaPrimary" class="btn btn--primary" href="#programs">
+              <span data-i18n="hero.cta1">Explore Programs</span>
+              <svg class="btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a id="heroCtaSecondary" class="btn btn--ghost" href="#contact" data-i18n="hero.cta2">Get in Touch</a>
+          </div>
+        </div>
+        <div class="hero__media reveal">
+          <div class="hero__blob" aria-hidden="true"></div>
+          <div class="hero__ring" aria-hidden="true"></div>
+          <div class="hero__dots" aria-hidden="true"></div>
+          <img id="heroImage" class="hero__image" src="assets/img/hero-dashboard.png" alt="Dolf Training Center learning dashboard" width="1200" height="800" loading="eager" />
+          <div class="hero__badge">
+            <span class="hero__badge-num">100%</span>
+            <span class="hero__badge-txt" data-i18n="hero.badge">Accredited</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== QUICK LINK CARDS ===================== -->
+    <section class="quick" aria-label="Shortcuts">
+      <div class="container quick__grid">
+        <a class="qcard qcard--primary reveal" href="#contact">
+          <span class="qcard__title" data-i18n="quick.contact.title">Get in Touch</span>
+          <span class="qcard__sub" data-i18n="quick.contact.sub">Talk to our team today</span>
+          <span class="qcard__arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+        </a>
+        <a class="qcard reveal" href="#programs">
+          <span class="qcard__title" data-i18n="quick.programs.title">Our Training Programs</span>
+          <span class="qcard__sub" data-i18n="quick.programs.sub">Browse all categories</span>
+          <span class="qcard__arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+        </a>
+        <a class="qcard qcard--dark reveal" href="#solutions">
+          <span class="qcard__title" data-i18n="quick.solutions.title">Services for Organizations</span>
+          <span class="qcard__sub" data-i18n="quick.solutions.sub">Tailored corporate training</span>
+          <span class="qcard__arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+        </a>
+        <a class="qcard reveal" href="#about">
+          <span class="qcard__title" data-i18n="quick.about.title">Learn more about Dolf Tech</span>
+          <span class="qcard__sub" data-i18n="quick.about.sub">Our story &amp; values</span>
+          <span class="qcard__arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ===================== WHO WE ARE ===================== -->
+    <section class="about section" id="about">
+      <div class="container about__inner">
+        <div class="about__content">
+          <h2 id="aboutHeading" class="section-title reveal" data-i18n-html="about.heading">Who <span class="accent">We Are?</span></h2>
+          <p id="aboutLead" class="about__lead reveal" data-i18n="about.lead">Dolf Training Center was established as part of the journey of Dolf Technologies, one of the leading companies in e-learning and training in the Kingdom. We focus on delivering practical and innovative training solutions, with official accreditation that ensures the high value of our certificates.</p>
+
+          <div class="accordion reveal" id="aboutAccordion">
+            <div class="accordion__item" data-acc="vision">
+              <button class="accordion__head" aria-expanded="false">
+                <span data-i18n="about.vision">Our Vision</span>
+                <svg class="accordion__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              <div class="accordion__panel">
+                <div class="accordion__body">
+                  <p data-i18n="about.vision.body">To be a leading, trusted reference in accredited training and digital learning across the Kingdom and the wider region.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion__item" data-acc="message">
+              <button class="accordion__head" aria-expanded="false">
+                <span data-i18n="about.message">Our Message</span>
+                <svg class="accordion__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              <div class="accordion__panel">
+                <div class="accordion__body">
+                  <p data-i18n="about.message.body">To empower individuals and organizations with practical, innovative and accredited training that keeps pace with the future of work.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion__item is-open" data-acc="values">
+              <button class="accordion__head" aria-expanded="true">
+                <span data-i18n="about.values">Our Values</span>
+                <svg class="accordion__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              <div class="accordion__panel">
+                <div class="accordion__body">
+                  <ul class="values">
+                    <li><span class="values__name" data-i18n="value.quality">Quality</span><span class="values__desc" data-i18n="value.quality.desc">Commitment to delivering training programs with high standards that reflect best practices.</span></li>
+                    <li><span class="values__name" data-i18n="value.innovation">Innovation</span><span class="values__desc" data-i18n="value.innovation.desc">Developing modern training methods that support emerging technologies and meet future needs.</span></li>
+                    <li><span class="values__name" data-i18n="value.empowerment">Empowerment</span><span class="values__desc" data-i18n="value.empowerment.desc">Building human capacities and enhancing employment opportunities through knowledge and practical application.</span></li>
+                    <li><span class="values__name" data-i18n="value.credibility">Credibility</span><span class="values__desc" data-i18n="value.credibility.desc">Transparency and reliability in all our dealings and partnerships.</span></li>
+                    <li><span class="values__name" data-i18n="value.excellence">Excellence</span><span class="values__desc" data-i18n="value.excellence.desc">Continuous pursuit of leadership in providing training solutions.</span></li>
+                    <li><span class="values__name" data-i18n="value.community">Community Service</span><span class="values__desc" data-i18n="value.community.desc">Contributing to the preparation of a qualified national generation that keeps pace with development needs.</span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="about__media reveal">
+          <div class="about__shape"></div>
+          <img id="aboutImage" class="about__image" src="assets/img/who-we-are-cutout.png" alt="Dolf Training Center trainer" width="900" height="1060" loading="lazy" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== TRAINING PROGRAMS ===================== -->
+    <section class="programs section" id="programs">
+      <div class="container">
+        <div class="section-head reveal">
+          <h2 id="servicesHeading" class="section-title" data-i18n="programs.heading">Training Programs</h2>
+          <p id="servicesDescription" class="section-sub" data-i18n="programs.sub">Four pathways designed to build real, future-ready capabilities.</p>
+        </div>
+
+        <div class="programs__grid reveal" id="programsGrid">
+          <article class="program is-active" data-program>
+            <img class="program__bg" src="assets/img/program-business.jpg" alt="" loading="lazy" />
+            <div class="program__top"><span class="program__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V8l5-4 5 4v13M9 21v-4h2v4"/></svg></span></div>
+            <div class="program__content">
+              <h3 class="program__title" data-i18n="program.business">Business Development &amp; Management</h3>
+              <p class="program__desc" data-i18n="program.business.desc">Enhancing leadership and modern management skills.</p>
+            </div>
+            <span class="program__cta" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </article>
+
+          <article class="program" data-program>
+            <img class="program__bg" src="assets/img/program-technology.jpg" alt="" loading="lazy" />
+            <div class="program__top"><span class="program__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span></div>
+            <div class="program__content">
+              <h3 class="program__title" data-i18n="program.tech">Technology &amp; Digital Transformation</h3>
+              <p class="program__desc" data-i18n="program.tech.desc">Mastering the tools and skills that drive digital transformation.</p>
+            </div>
+            <span class="program__cta" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </article>
+
+          <article class="program" data-program>
+            <img class="program__bg" src="assets/img/program-leadership.jpg" alt="" loading="lazy" />
+            <div class="program__top"><span class="program__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M15 8a3 3 0 100-.01M3 20a6 6 0 0112 0M15 20a6 6 0 00-3-5.2"/></svg></span></div>
+            <div class="program__content">
+              <h3 class="program__title" data-i18n="program.leadership">Personal &amp; Leadership Skills</h3>
+              <p class="program__desc" data-i18n="program.leadership.desc">Developing soft skills, communication and effective leadership.</p>
+            </div>
+            <span class="program__cta" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </article>
+
+          <article class="program" data-program>
+            <img class="program__bg" src="assets/img/program-specialized.jpg" alt="" loading="lazy" />
+            <div class="program__top"><span class="program__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6 6 .9-4.5 4.3 1 6.2L12 22"/></svg></span></div>
+            <div class="program__content">
+              <h3 class="program__title" data-i18n="program.specialized">Specialized Programs</h3>
+              <p class="program__desc" data-i18n="program.specialized.desc">Tailored, sector-specific programs designed around real needs.</p>
+            </div>
+            <span class="program__cta" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </article>
+        </div>
+
+        <p class="programs__note reveal">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4M12 3a9 9 0 100 18 9 9 0 000-18z"/></svg>
+          <span data-i18n="programs.note">All our programs are officially accredited by the relevant authorities to ensure the recognition of our certificates.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================== SERVICES FOR ORGANIZATIONS ===================== -->
+    <section class="solutions section" id="solutions">
+      <div class="container solutions__card reveal">
+        <div class="solutions__bg" aria-hidden="true"></div>
+        <div class="solutions__content">
+          <h2 id="solutionsHeading" class="section-title section-title--light" data-i18n-html="solutions.heading">Services for <span class="accent-light">Organizations.</span></h2>
+          <p id="solutionsDescription" class="solutions__lead" data-i18n="solutions.lead">Customized training and consulting that grow your team's capabilities.</p>
+          <ul id="solutionsList" class="solutions__list">
+            <li>
+              <span class="solutions__check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg></span>
+              <span data-i18n="solutions.item1">Designing customized programs tailored to each organization's needs.</span>
+            </li>
+            <li>
+              <span class="solutions__check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg></span>
+              <span data-i18n="solutions.item2">Training employees in technical and leadership skills.</span>
+            </li>
+            <li>
+              <span class="solutions__check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg></span>
+              <span data-i18n="solutions.item3">Providing consulting services for institutional development and capacity building.</span>
+            </li>
+          </ul>
+          <a class="btn btn--white" href="#contact">
+            <span data-i18n="solutions.cta">Partner with us</span>
+            <svg class="btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+        <div class="solutions__media">
+          <img src="assets/img/services-hands.png" alt="Corporate training solutions" width="1050" height="832" loading="lazy" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FAQs ===================== -->
+    <section class="faq section" id="faqs">
+      <div class="container">
+        <div class="section-head reveal">
+          <h2 id="faqHeading" class="section-title" data-i18n="faq.heading">FAQs</h2>
+          <p id="faqDescription" class="section-sub" data-i18n="faq.sub"></p>
+
+        <div class="accordion accordion--faq reveal" id="faqAccordion">
+          <div class="accordion__item is-open">
+            <button class="accordion__head" aria-expanded="true">
+              <span data-i18n="faq.q1">Are your certificates accredited?</span>
+              <svg class="accordion__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <div class="accordion__panel">
+              <div class="accordion__body"><p data-i18n="faq.a1">Yes, all programs at Dolf Training Center are accredited by the Technical and Vocational Training Corporation, as well as the National eLearning Center.</p></div>
+            </div>
+          </div>
+          <div class="accordion__item">
+            <button class="accordion__head" aria-expanded="false">
+              <span data-i18n="faq.q2">Can courses be attended remotely?</span>
+              <svg class="accordion__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <div class="accordion__panel">
+              <div class="accordion__body"><p data-i18n="faq.a2">Yes. Most of our programs are available online through interactive virtual classrooms, and several are also offered in person.</p></div>
+            </div>
+          </div>
+          <div class="accordion__item">
+            <button class="accordion__head" aria-expanded="false">
+              <span data-i18n="faq.q3">Is a certificate issued after completing the course?</span>
+              <svg class="accordion__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <div class="accordion__panel">
+              <div class="accordion__body"><p data-i18n="faq.a3">Yes. An accredited certificate is issued upon successful completion of each program.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== GET IN TOUCH ===================== -->
+    <section class="contact section" id="contact">
+      <div class="container contact__card reveal">
+        <div class="contact__bg" aria-hidden="true"></div>
+        <div class="contact__info">
+          <h2 class="section-title section-title--light" data-i18n-html="contact.heading">Get <span class="accent-light">in Touch.</span></h2>
+          <p class="contact__lead" data-i18n="contact.lead">Have a question or a training need? Send us a message and our team will get back to you.</p>
+          <ul class="contact__details">
+            <li>
+              <span class="contact__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3-8.6A2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 2 .8 2.9a2 2 0 01-.5 2.1L7.6 9.7a16 16 0 006 6l1-1a2 2 0 012.1-.4c.9.4 1.9.7 2.9.8a2 2 0 011.4 2.8z"/></svg></span>
+              <div><span class="contact__label" data-i18n="contact.phone">Phone</span><a class="contact__value" href="tel:+966548161616" dir="ltr">+966 548 16 1616</a></div>
+            </li>
+            <li>
+              <span class="contact__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg></span>
+              <div><span class="contact__label" data-i18n="contact.email">E-mail</span><a class="contact__value" href="mailto:info@dolftech.com" dir="ltr">info@dolftech.com</a></div>
+            </li>
+            <li>
+              <span class="contact__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+              <div><span class="contact__label" data-i18n="contact.address">Address</span><span class="contact__value" data-i18n="contact.address.value">Riyadh, Kingdom of Saudi Arabia</span></div>
+            </li>
+          </ul>
+          <a class="contact__map" href="https://maps.google.com/?q=Riyadh" target="_blank" rel="noopener" aria-label="Open location in Google Maps">
+            <img src="assets/img/map.jpg" alt="Dolf Training Center location map" width="760" height="539" loading="lazy" />
+            <span class="contact__map-pin"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+          </a>
+        </div>
+
+        <form class="contact__form" id="contactForm" novalidate>
+          <div class="field">
+            <label for="f-name" data-i18n="form.name">Name</label>
+            <input id="f-name" name="name" type="text" required data-i18n-placeholder="form.name.ph" placeholder="Your full name" />
+            <small class="field__error" data-i18n="form.err.required">This field is required.</small>
+          </div>
+          <div class="field">
+            <label for="f-company" data-i18n="form.company">Company</label>
+            <input id="f-company" name="company" type="text" data-i18n-placeholder="form.company.ph" placeholder="Company / organization" />
+          </div>
+          <div class="field">
+            <label for="f-email" data-i18n="form.email">Email</label>
+            <input id="f-email" name="email" type="email" required dir="ltr" data-i18n-placeholder="form.email.ph" placeholder="name@example.com" />
+            <small class="field__error" data-i18n="form.err.email">Please enter a valid email.</small>
+          </div>
+          <div class="field">
+            <label for="f-phone" data-i18n="form.phone">Phone</label>
+            <input id="f-phone" name="phone" type="tel" dir="ltr" data-i18n-placeholder="form.phone.ph" placeholder="+966 5x xxx xxxx" />
+          </div>
+          <div class="field field--full">
+            <label for="f-subject" data-i18n="form.subject">Subject</label>
+            <input id="f-subject" name="subject" type="text" data-i18n-placeholder="form.subject.ph" placeholder="How can we help?" />
+          </div>
+          <div class="field field--full">
+            <label for="f-message" data-i18n="form.message">Message</label>
+            <textarea id="f-message" name="message" rows="4" required data-i18n-placeholder="form.message.ph" placeholder="Write your message…"></textarea>
+            <small class="field__error" data-i18n="form.err.required">This field is required.</small>
+          </div>
+          <div class="field field--full contact__submit">
+            <button class="btn btn--primary btn--block" type="submit">
+              <span data-i18n="form.send">Send</span>
+              <svg class="btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <p class="form__success" id="formSuccess" hidden data-i18n="form.success">Thank you! Your message has been sent. We'll get back to you shortly.</p>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <img class="footer__logo footer__logo--en" src="assets/logo/logo-stacked.png" alt="Dolf Training Center" />
+        <img class="footer__logo footer__logo--ar" src="assets/logo/logo-stacked.png" alt="مركز دلف للتدريب" />
+      </div>
+
+      <div class="footer__social">
+        <span class="footer__heading" data-i18n="footer.social">sss</span>
+        <div class="footer__icons">
+          <a href="mailto:info@dolftech.com" aria-label="Email"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></a>
+          <a href="#" aria-label="X"><svg viewBox="0 0 24 24"><path d="M4 4l16 16M20 4L4 20" stroke-width="2.4"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 10v7M7 7v.01M11 17v-4a2 2 0 014 0v4" fill="none"/></svg></a>
+        </div>
+      </div>
+
+      <div class="footer__powered">
+        <div class="footer__badge" title="Accredited Center">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="M8.5 14L7 22l5-3 5 3-1.5-8"/><path d="M9.5 9l1.7 1.7L15 7" stroke="#fff"/></svg>
+          <span data-i18n="footer.certified">Accredited Censter</span>
+        </div>
+        <div class="footer__partner">
+          <span class="footer__heading" data-i18n="footer.powered">DTC is powered by</span>
+          <img src="assets/img/partner-dolf-tech.png" alt="Dolf Technologies Co." />
+        </div>
+      </div>
+    </div>
+    <div class="footer__bar">
+      <div class="container">
+        <p data-i18n-html="footer.copy">All Rights Reserved © Dolf Training Center <span id="year">2025</span></p>
+      </div>
+    </div>
+  </footer>
+
+  <button class="to-top" id="toTop" aria-label="Back to top" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+
+  <script src="assets/js/i18n.js"></script>
+  <script>
+    window.DTC_CONFIG = {
+      apiUrl: 'http://localhost:3000/api/v1/content',
+      tenantCode: 'dtc',
+    };
+  </script>
+  <script type="module" src="assets/js/main.js"></script>
+</body>
+</html>

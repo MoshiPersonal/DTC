@@ -1,0 +1,22 @@
+# Keep the build context tiny & the image clean.
+# The UI/ folder is ~1.4 GB of source .ai/.pdf — never ship it.
+UI/
+Logo/
+.claude/
+.git/
+.gitignore
+
+# Docs & docker meta (not needed at runtime)
+*.md
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Scratch / OS / editor
+_tools/
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

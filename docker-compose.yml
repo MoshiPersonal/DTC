@@ -1,0 +1,15 @@
+# Convenience wrapper:  docker compose up -d --build
+services:
+  web:
+    build: .
+    image: dtc-website:latest
+    container_name: dtc-website
+    ports:
+      - "8085:80"          # browse at http://localhost:8085
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
