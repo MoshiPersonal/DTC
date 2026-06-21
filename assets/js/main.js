@@ -85,6 +85,59 @@
     return '';
   }
 
+  function buildNavLinks(items, lang) {
+    if (!Array.isArray(items)) return '';
+    return items
+      .map(function (item, index) {
+        var label = lang === 'ar' ? item.labelAr || item.labelEn : item.labelEn || item.labelAr || '';
+        var href = item.url || '#';
+        return '<li><a class="nav__link' + (index === 0 ? ' is-active' : '') + '" href="' + href + '">' + label + '</a></li>';
+      })
+      .join('');
+  }
+
+  function getSocialIcon(platform) {
+    if (!platform || typeof platform !== 'string') return '';
+    var key = platform.trim().toLowerCase();
+    switch (key) {
+      case 'twitter':
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 4.01c-.8.35-1.65.58-2.55.69a4.48 4.48 0 0 0 1.96-2.47 8.97 8.97 0 0 1-2.84 1.09 4.47 4.47 0 0 0-7.62 4.07 12.69 12.69 0 0 1-9.22-4.68 4.48 4.48 0 0 0 1.38 5.97 4.42 4.42 0 0 1-2.03-.56v.06a4.47 4.47 0 0 0 3.58 4.38 4.5 4.5 0 0 1-2.02.08 4.48 4.48 0 0 0 4.18 3.1 8.97 8.97 0 0 1-5.56 1.92A8.99 8.99 0 0 1 2 19.54a12.65 12.65 0 0 0 6.86 2.01c8.23 0 12.74-6.82 12.74-12.74v-.58A9.1 9.1 0 0 0 22 4.01z"/></svg>';
+      case 'instagram':
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>';
+      case 'linkedin':
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 11v6M8 8v.01M12 17v-4a2 2 0 0 1 4 0v4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>';
+      case 'x':
+      case 'twitterx':
+      case 'twitter x':
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l16 16M20 4L4 20" stroke="currentColor" stroke-width="2.4"/></svg>';
+      case 'facebook':
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>';
+      default:
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>';
+    }
+  }
+
+  function buildSocialLinks(items) {
+    if (!Array.isArray(items)) return '';
+    return items
+      .filter(function (item) { return item && item.url; })
+      .map(function (item) {
+        var icon = getSocialIcon(item.platform || '');
+        var href = item.url || '#';
+        return '<a href="' + href + '" target="_blank" rel="noopener noreferrer" aria-label="' + (item.platform || 'Social Link') + '">' + icon + '</a>';
+      })
+      .join('');
+  }
+
+  function sortByDisplayOrder(items) {
+    if (!Array.isArray(items)) return [];
+    return items.slice().sort(function (a, b) {
+      var aValue = typeof a.displayOrder === 'number' ? a.displayOrder : Number(a.displayOrder) || 0;
+      var bValue = typeof b.displayOrder === 'number' ? b.displayOrder : Number(b.displayOrder) || 0;
+      return aValue - bValue;
+    });
+  }
+
   function buildAboutItems(items) {
     return items
       .map(function (item, index) {
@@ -238,6 +291,44 @@ var assetPrefix =
       var heroImageUrl = resolveAssetUrl(hero.image, assetPrefix);
       if (hasValue(heroImageUrl)) setAttr('#heroImage', 'src', heroImageUrl);
 
+      var layout = data.layout || {};
+      var tenant = data.tenant || {};
+      var portalBranding = (tenant.branding && tenant.branding.portal) || {};
+      var logoEnUrl = resolveAssetUrl(portalBranding.logoEn, assetPrefix);
+      var logoArUrl = resolveAssetUrl(portalBranding.logoAr, assetPrefix);
+      if (hasValue(logoEnUrl)) setAttr('.brand__logo--full.brand__logo--en', 'src', logoEnUrl);
+      if (hasValue(logoArUrl)) setAttr('.brand__logo--full.brand__logo--ar', 'src', logoArUrl);
+      if (hasValue(logoEnUrl)) setAttr('.footer__logo--en', 'src', logoEnUrl);
+      if (hasValue(logoArUrl)) setAttr('.footer__logo--ar', 'src', logoArUrl);
+
+      var navLinks = (layout.header && layout.header.navLinks) || [];
+      if (navLinks.length) {
+        renderItems('.nav__list', buildNavLinks(navLinks, lang));
+        attachNavLinkCloseListeners();
+      }
+
+      var footerSocialLinks = (layout.footer && layout.footer.socialLinks) || [];
+      if (footerSocialLinks.length) renderItems('.footer__icons', buildSocialLinks(footerSocialLinks));
+
+      var contactInfo = tenant.contactInfo || {};
+      var phone = contactInfo.phone || '';
+      var email = contactInfo.email || '';
+      var address = lang === 'ar' ? contactInfo.addressAr || contactInfo.addressEn : contactInfo.addressEn || contactInfo.addressAr;
+      var phoneNode = document.querySelector('.contact__details a[href^="tel:"]');
+      if (phoneNode && hasValue(phone)) {
+        phoneNode.setAttribute('href', 'tel:' + phone.replace(/\s+/g, ''));
+        phoneNode.textContent = phone;
+      }
+      var emailNode = document.querySelector('.contact__details a[href^="mailto:"]');
+      if (emailNode && hasValue(email)) {
+        emailNode.setAttribute('href', 'mailto:' + email);
+        emailNode.textContent = email;
+      }
+      var addressNode = document.querySelector('.contact__details .contact__value[data-i18n="contact.address.value"]');
+      if (addressNode && hasValue(address)) {
+        addressNode.textContent = address;
+      }
+
       var about = page.about || {};
       var aboutImageUrl = resolveAssetUrl(about.image, assetPrefix);
       if (hasValue(aboutImageUrl)) setAttr('#aboutImage', 'src', aboutImageUrl);
@@ -259,7 +350,7 @@ var assetPrefix =
       setText('#solutionsHeading', lang === 'ar' ? services.headingAr || services.headingEn : services.headingEn || services.headingAr);
       setText('#solutionsDescription', lang === 'ar' ? services.descriptionAr || services.descriptionEn : services.descriptionEn || services.descriptionAr);
 
-      var serviceItems = (services.servicesList || []).map(function (service) {
+      var serviceItems = sortByDisplayOrder(services.servicesList || []).map(function (service) {
         return {
           title: lang === 'ar' ? service.titleAr || service.titleEn : service.titleEn || service.titleAr,
           description: lang === 'ar' ? service.descriptionAr || service.descriptionEn : service.descriptionEn || service.descriptionAr,
@@ -270,10 +361,7 @@ var assetPrefix =
       }
 
       var faqs = page.faqsContext || {};
-      setText('#faqHeading', lang === 'ar' ? faqs.headingAr || faqs.headingEn : faqs.headingEn || faqs.headingAr);
-      setText('#faqDescription', lang === 'ar' ? faqs.descriptionAr || faqs.descriptionEn : faqs.descriptionEn || faqs.descriptionAr);
-
-      var faqItems = (faqs.faqsList || []).map(function (faq) {
+      var faqItems = sortByDisplayOrder(faqs.faqsList || []).map(function (faq) {
         return {
           question: lang === 'ar' ? faq.questionAr || faq.questionEn : faq.questionEn || faq.questionAr,
           answer: lang === 'ar' ? faq.answerAr || faq.answerEn : faq.answerEn || faq.answerAr,
@@ -282,6 +370,19 @@ var assetPrefix =
       if (faqItems.length) {
         renderItems('#faqAccordion', buildFaqItems(faqItems));
         initAccordion(document.getElementById('faqAccordion'));
+      }
+      setText('#faqHeading', lang === 'ar' ? faqs.headingAr || faqs.headingEn : faqs.headingEn || faqs.headingAr);
+      setText('#faqDescription', lang === 'ar' ? faqs.descriptionAr || faqs.descriptionEn : faqs.descriptionEn || faqs.descriptionAr);
+
+      var footerData = layout.footer || {};
+      var footerCopyText = lang === 'ar'
+        ? footerData.copyrightTextAr || footerData.copyrightTextEn
+        : footerData.copyrightTextEn || footerData.copyrightTextAr;
+      if (hasValue(footerCopyText)) {
+        var footerCopyEl = document.querySelector('[data-i18n-html="footer.copy"]');
+        if (footerCopyEl) {
+          footerCopyEl.innerHTML = footerCopyText + ' <span id="year">' + new Date().getFullYear() + '</span>';
+        }
       }
 
       var seo = page.seo || {};
@@ -346,6 +447,15 @@ var assetPrefix =
   }
   if (scrim) scrim.addEventListener("click", closeNav);
 
+  function attachNavLinkCloseListeners() {
+    if (!nav) return;
+    nav.querySelectorAll("a").forEach(function (a) {
+      a.addEventListener("click", function () {
+        if (window.innerWidth <= 980) closeNav();
+      });
+    });
+  }
+
   // Mobile submenu expand
   document.querySelectorAll(".nav__caret").forEach(function (btn) {
     btn.addEventListener("click", function (e) {
@@ -357,11 +467,7 @@ var assetPrefix =
   });
 
   // Close drawer when a nav link is clicked (mobile)
-  nav.querySelectorAll("a").forEach(function (a) {
-    a.addEventListener("click", function () {
-      if (window.innerWidth <= 980) closeNav();
-    });
-  });
+  attachNavLinkCloseListeners();
 
   /* ---------------- Accordions ---------------- */
   function initAccordion(root) {

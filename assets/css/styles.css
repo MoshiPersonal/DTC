@@ -416,6 +416,7 @@ html[lang="ar"] .about__image { transform: scaleX(1); }
   position: absolute;
   bottom: 0;
   right: 0;
+  left: auto;
   width: min(55%, 500px);
   height: 100%;
   display: flex;
@@ -423,6 +424,10 @@ html[lang="ar"] .about__image { transform: scaleX(1); }
   align-items: flex-end;
   z-index: 1;
   pointer-events: none;
+}
+html[lang="ar"] .solutions__media {
+  left: 0;
+  right: auto;
 }
 .solutions__media img {
   width: auto;
@@ -494,7 +499,7 @@ a.contact__value:hover { color: #6ea2ff; }
    ============================================================ */
 .footer { background: var(--surface); border-block-start: 1px solid var(--line); padding-block-start: 60px; }
 .footer__inner { display: grid; grid-template-columns: 1.2fr 1fr 1.3fr; gap: 40px; align-items: center; padding-block-end: 40px; }
-.footer__logo { height: 88px; width: auto; }
+.footer__logo { height: auto; width: auto; }
 .footer__logo--ar { display: none; }
 html[lang="ar"] .footer__logo--en { display: none; }
 html[lang="ar"] .footer__logo--ar { display: block; }
