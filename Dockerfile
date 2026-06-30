@@ -4,6 +4,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY package.json .
+COPY .env .
 COPY scripts ./scripts
 COPY index.html .
 COPY assets ./assets

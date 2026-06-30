@@ -77,21 +77,70 @@
   }
 
   function resolveAssetUrl(media, assetPrefix) {
-    if (!hasValue(media) || typeof media !== 'object') return '';
-    if (typeof media === 'string') return media;
-    if (typeof media.url === 'string') {
+    if (!hasValue(media)) return '';
+    if (typeof media === 'string') {
+      return media.startsWith('http') ? media : assetPrefix.replace(/\/$/, '') + media;
+    }
+    if (typeof media === 'object' && typeof media.url === 'string') {
       return media.url.startsWith('http') ? media.url : assetPrefix.replace(/\/$/, '') + media.url;
     }
     return '';
   }
 
+  function normalizeHash(hash) {
+    if (!hash) return '#home';
+    var value = String(hash).trim();
+    if (value === '#') return '#home';
+    var idx = value.indexOf('#');
+    if (idx >= 0) {
+      value = value.slice(idx);
+    }
+    if (!value) return '#home';
+    return value;
+  }
+
+  function getNavLinks() {
+    return Array.prototype.slice.call(document.querySelectorAll('.nav__link[href*="#"]'));
+  }
+
+  function setActiveNavLink(hash) {
+    hash = normalizeHash(hash);
+    var links = getNavLinks();
+    var found = false;
+
+    links.forEach(function (link) {
+      var href = normalizeHash(link.getAttribute('href'));
+      var active = href === hash;
+      link.classList.toggle('is-active', active);
+      if (active) found = true;
+    });
+
+    if (!found) {
+      var defaultLink = document.querySelector('.nav__link[href="#home"]') || document.querySelector('.nav__list li:first-child .nav__link');
+      if (defaultLink) defaultLink.classList.add('is-active');
+    }
+  }
+
+  function scrollToHashTarget(hash) {
+    hash = normalizeHash(hash);
+    var target = document.querySelector(hash);
+    if (!target) return;
+    window.requestAnimationFrame(function () {
+      window.scrollTo({ top: target.offsetTop, behavior: 'auto' });
+    });
+  }
+
   function buildNavLinks(items, lang) {
     if (!Array.isArray(items)) return '';
+    var currentHash = normalizeHash(window.location.hash || '#home');
+
     return items
-      .map(function (item, index) {
+      .map(function (item) {
         var label = lang === 'ar' ? item.labelAr || item.labelEn : item.labelEn || item.labelAr || '';
-        var href = item.url || '#';
-        return '<li><a class="nav__link' + (index === 0 ? ' is-active' : '') + '" href="' + href + '">' + label + '</a></li>';
+        var href = item.url || '#home';
+        var isActive = normalizeHash(href) === currentHash;
+
+        return '<li><a class="nav__link' + (isActive ? ' is-active' : '') + '" href="' + href + '">' + label + '</a></li>';
       })
       .join('');
   }
@@ -210,101 +259,376 @@
       .join('');
   }
 
- async function loadDynamicContent() {
-  var config = window.DTC_CONFIG || {};
+  function getConfig() {
+    var config = window.DTC_CONFIG || {};
+    var env = {};
 
-  var env = {};
+    try {
+      if (typeof import.meta !== 'undefined' && import.meta && import.meta.env) {
+        env = import.meta.env;
+      }
+      if (window.__ENV__) {
+        env = Object.assign({}, env, window.__ENV__);
+      }
+    } catch (e) {}
 
-  try {
-    if (
-      typeof import.meta !== 'undefined' &&
-      import.meta &&
-      import.meta.env
-    ) {
-      env = import.meta.env;
-    }
-  } catch (e) {}
-
-  var API_BASE =
-    env.VITE_API_URL ||
-    config.apiUrl ||
-    'http://localhost:3000/api/v1/content';
-
-  var TENANT_CODE =
-    (env.VITE_TENANT_CODE ||
-      config.tenantCode ||
-      'dtc').toLowerCase();
-
-  var assetPrefix =
-    env.VITE_ASSET_URL ||
-    config.assetUrl ||
-    'http://localhost:3000';
-
-  console.log('API_BASE:', API_BASE);
-  console.log('TENANT_CODE:', TENANT_CODE);
-  console.log('assetPrefix:', assetPrefix);
-
-try {
-  if (
-    typeof import.meta !== 'undefined' &&
-    import.meta &&
-    import.meta.env
-  ) {
-    env = import.meta.env;
+    return {
+      apiUrl: env.VITE_API_URL || config.apiUrl || window.location.origin + '/api/v1/content',
+      assetUrl: env.VITE_ASSET_URL || config.assetUrl || window.location.origin,
+      tenantCode: (env.VITE_TENANT_CODE || config.tenantCode || 'dtc').toLowerCase(),
+      lmsApiUrl: env.VITE_LMS_API_URL || config.lmsApiUrl || '',
+      lmsToken: env.VITE_LMS_TOKEN || config.lmsToken || '',
+      lmsOrg: env.VITE_LMS_ORG || config.lmsOrg || '',
+      lmsCourseShortname: env.VITE_LMS_COURSE_SHORTNAME || config.lmsCourseShortname || 'All',
+      lmsCourseUrlTemplate: env.VITE_LMS_COURSE_URL_TEMPLATE || config.lmsCourseUrlTemplate || config.courseUrlTemplate || ''
+    };
   }
-} catch (e) {
-  env = {};
-}
 
-console.log('Environment variables:', env);
+  function buildLmsProgramCards(items, lang, courseUrlTemplate, assetPrefix) {
+    if (!Array.isArray(items) || items.length === 0) return '';
 
-var API_BASE =
-  env.VITE_API_URL ||
-  'http://localhost:3000/api/v1/content';
+    // Render all items into a track; the slider will show 4 at a time.
+    return items.map(function (item) {
+      var title = lang === 'ar' ? (item.fullname_ar || item.fullname || '') : (item.fullname || item.fullname_ar || '');
+      var imageUrl = resolveAssetUrl(item.courseimage || (item.overviewfiles && item.overviewfiles[0] && item.overviewfiles[0].fileurl), assetPrefix);
+      var imageAlt = title || 'Training Program';
+      var courseId = item.id;
+      var courseHref = courseUrlTemplate ? courseUrlTemplate.replace('{courseId}', courseId) : '#';
 
-var TENANT_CODE =
-  (env.VITE_TENANT_CODE || 'dtc')
-    .toLowerCase();
+      return (
+        '<article class="program program--compact">' +
+        (imageUrl ? '<img class="program__bg" src="' + imageUrl + '" alt="' + imageAlt + '" loading="lazy" />' : '') +
+        '<div class="program__content">' +
+          '<h3 class="program__title">' +
+            '<a href="' + courseHref + '" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">' + title + '</a>' +
+          '</h3>' +
+        '</div>' +
+        '<a class="program__cta" href="' + courseHref + '" target="_blank" rel="noopener noreferrer" aria-label="Open ' + title + '"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' +
+        '</article>'
+      );
+    }).join('');
+  }
 
-var assetPrefix =
-  env.VITE_ASSET_URL ||
-  'http://localhost:3000';
+  function initProgramsSlider(container) {
+    if (!container) return;
+    var track = container.querySelector('.programs__track');
+    if (!track) return;
+
+    var items = Array.prototype.slice.call(track.children);
+    var total = items.length;
+    var index = 0;
+    var isPointer = window.matchMedia('(hover: hover)').matches;
+
+    function getPerView() {
+      var width = container.clientWidth;
+      if (width < 680) return 1;
+      if (width < 920) return 2;
+      if (width < 1200) return 3;
+      return 4;
+    }
+
+    function scrollToIndex() {
+      if (!items[index]) return;
+      track.scrollTo({ left: items[index].offsetLeft, behavior: 'smooth' });
+    }
+
+    function clampIndex(value) {
+      var perView = getPerView();
+      return Math.min(Math.max(0, value), Math.max(0, total - perView));
+    }
+
+    function updateIndex(newIndex) {
+      index = clampIndex(newIndex);
+      scrollToIndex();
+    }
+
+    function onResize() {
+      index = clampIndex(index);
+      scrollToIndex();
+    }
+
+    container.classList.add('programs--slider');
+    track.style.overflowX = 'auto';
+    track.style.scrollSnapType = 'x mandatory';
+    track.style.webkitOverflowScrolling = 'touch';
+    track.style.scrollBehavior = 'smooth';
+    track.style.cursor = 'grab';
+    track.style.touchAction = 'pan-x';
+    items.forEach(function (item) {
+      item.style.scrollSnapAlign = 'start';
+    });
+
+    if (isPointer) {
+      try { initProgramCards(track); } catch (e) { console.warn('initProgramCards failed', e); }
+    }
+
+    var autoPlayTimer = null;
+    function startAutoplay() {
+      if (autoPlayTimer || total <= getPerView()) return;
+      autoPlayTimer = setInterval(function () {
+        var nextIndex = index + 1;
+        if (nextIndex > total - getPerView()) nextIndex = 0;
+        updateIndex(nextIndex);
+      }, 3000);
+    }
+    function stopAutoplay() {
+      if (autoPlayTimer) {
+        clearInterval(autoPlayTimer);
+        autoPlayTimer = null;
+      }
+    }
+
+    track.addEventListener('pointerdown', function () {
+      stopAutoplay();
+    });
+    track.addEventListener('pointerup', function () {
+      startAutoplay();
+    });
+    track.addEventListener('pointerleave', function () {
+      startAutoplay();
+    });
+    window.addEventListener('resize', onResize);
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stopAutoplay(); else startAutoplay();
+    });
+
+    if (isPointer) {
+      track.addEventListener('mouseenter', stopAutoplay);
+      track.addEventListener('mouseleave', startAutoplay);
+    }
+
+    startAutoplay();
+    onResize();
+  }
+
+  function buildArticleCards(items, lang, assetPrefix) {
+    if (!Array.isArray(items) || items.length === 0) return '';
+
+    return items
+      .map(function (item) {
+        var title = lang === 'ar' ? item.titleAr || item.titleEn : item.titleEn || item.titleAr || '';
+        var excerpt = lang === 'ar' ? item.excerptAr || item.excerptEn : item.excerptEn || item.excerptAr || '';
+        var imageUrl = resolveAssetUrl(item.image, assetPrefix);
+        var imageAlt = item.image && item.image.alt ? item.image.alt : title;
+        var slug = item.slug ? '/' + item.slug : '#';
+
+        return (
+          '<article class="program">' +
+          (imageUrl ? '<img class="program__bg" src="' + imageUrl + '" alt="' + imageAlt + '" loading="lazy" />' : '') +
+          '<div class="program__top"><span class="program__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span></div>' +
+          '<div class="program__content"><h3 class="program__title">' + title + '</h3><p class="program__desc">' + excerpt + '</p></div>' +
+          '<a class="program__cta" href="' + slug + '" aria-label="Read more about ' + title + '"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' +
+          '</article>'
+        );
+      })
+      .join('');
+  }
+
+  function getLocalizedText(content, lang, fieldNames) {
+    var keys = Array.isArray(fieldNames) ? fieldNames : [fieldNames];
+    var fallback = '';
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var value = content && content[key + (lang === 'ar' ? 'Ar' : 'En')];
+      if (hasValue(value)) return value;
+      if (hasValue(content && content[key])) return content[key];
+      if (i === 0 && hasValue(content && content[key + 'En'])) return content[key + 'En'];
+      if (i === 0 && hasValue(content && content[key + 'Ar'])) return content[key + 'Ar'];
+    }
+    return fallback;
+  }
+
+  function renderHeroBlock(block, lang, assetPrefix) {
+    var content = block.content || {};
+    var title = getLocalizedText(content, lang, ['title']);
+    var subtitle = getLocalizedText(content, lang, ['subtitle']);
+    var description = getLocalizedText(content, lang, ['description']);
+    var ctaText = getLocalizedText(content, lang, ['ctaText']);
+    var secondaryCtaText = getLocalizedText(content, lang, ['secondaryCtaText']);
+    var heroImageUrl = resolveAssetUrl(content.image, assetPrefix);
+
+    setHTML('#heroTitle', (title || '') + '<span class="t-dot">.</span>');
+    setText('#heroSubtitle', subtitle);
+    setText('#heroText', description);
+    setAttr('#heroCtaPrimary', 'href', content.ctaUrl || '#');
+    setText('#heroCtaPrimary span', ctaText);
+    setAttr('#heroCtaSecondary', 'href', content.secondaryCtaUrl || '#contact');
+    setText('#heroCtaSecondary', secondaryCtaText || (lang === 'ar' ? 'تواصل معنا' : 'Contact us'));
+    if (hasValue(heroImageUrl)) setAttr('#heroImage', 'src', heroImageUrl);
+  }
+
+  function renderAboutBlock(block, lang, assetPrefix) {
+    var content = block.content || {};
+    var heading = getLocalizedText(content, lang, ['heading']);
+    var description = getLocalizedText(content, lang, ['description']);
+    var imageUrl = resolveAssetUrl(content.image, assetPrefix);
+
+    if (hasValue(imageUrl)) setAttr('#aboutImage', 'src', imageUrl);
+    setHTML('#aboutHeading', heading);
+    setText('#aboutLead', description);
+
+    var sections = Array.isArray(content.additionalSections) ? content.additionalSections : [];
+    var items = sections.map(function (item) {
+      return {
+        title: getLocalizedText(item, lang, ['title']),
+        content: getLocalizedText(item, lang, ['content']),
+      };
+    });
+
+    if (items.length) {
+      renderItems('#aboutAccordion', buildAboutItems(items));
+      initAccordion(document.getElementById('aboutAccordion'));
+    }
+  }
+
+  function renderServicesBlock(block, lang, assetPrefix) {
+    var content = block.content || {};
+    var heading = getLocalizedText(content, lang, ['heading']);
+    var description = getLocalizedText(content, lang, ['description']);
+    var imageUrl = resolveAssetUrl(content.image, assetPrefix);
+    var imageAlt = content.image && content.image.alt ? content.image.alt : heading;
+    var items = sortByDisplayOrder(content.servicesList || []).map(function (service) {
+      return {
+        title: getLocalizedText(service, lang, ['title']),
+        description: getLocalizedText(service, lang, ['description']),
+      };
+    });
+
+    setHTML('#solutionsHeading', (heading || '') + '<span class="t-dot">.</span>');
+    setText('#solutionsDescription', description);
+    if (hasValue(imageUrl)) {
+      setAttr('.solutions__media img', 'src', imageUrl);
+      setAttr('.solutions__media img', 'alt', imageAlt);
+    }
+    if (items.length) {
+      renderItems('#solutionsList', buildServiceItems(items));
+    }
+  }
+
+  function renderFaqsBlock(block, lang) {
+    var content = block.content || {};
+    var heading = getLocalizedText(content, lang, ['heading']);
+    var description = getLocalizedText(content, lang, ['description']);
+    var items = sortByDisplayOrder(content.faqsList || []).map(function (faq) {
+      return {
+        question: getLocalizedText(faq, lang, ['question']),
+        answer: getLocalizedText(faq, lang, ['answer']),
+      };
+    });
+
+    if (items.length) {
+      renderItems('#faqAccordion', buildFaqItems(items));
+      initAccordion(document.getElementById('faqAccordion'));
+    }
+    setText('#faqHeading', heading);
+    setText('#faqDescription', description);
+  }
+
+  function renderBlocks(blocks, lang, assetPrefix) {
+    if (!Array.isArray(blocks) || blocks.length === 0) return;
+
+    blocks.forEach(function (block) {
+      var type = String(block.blockType || '').toLowerCase();
+      if (type === 'heroblock') {
+        renderHeroBlock(block, lang, assetPrefix);
+      } else if (type === 'aboutblock') {
+        renderAboutBlock(block, lang, assetPrefix);
+      } else if (type === 'servicesblock') {
+        renderServicesBlock(block, lang, assetPrefix);
+      } else if (type === 'faqsblock') {
+        renderFaqsBlock(block, lang);
+      }
+    });
+  }
+
+  async function loadLmsPrograms(lang, assetPrefix) {
+    var config = getConfig();
+    var lmsApiUrl = config.lmsApiUrl;
+    var lmsToken = config.lmsToken;
+    var lmsOrg = config.lmsOrg;
+    var lmsShortname = config.lmsCourseShortname;
+    var courseUrlTemplate = config.lmsCourseUrlTemplate;
+    var container = document.getElementById('programsGrid');
+
+    if (!container || !lmsApiUrl || !lmsToken) return;
+
+    var body = new URLSearchParams();
+    body.set('field', 'shortname');
+    body.set('value', lmsShortname || 'All');
+    body.set('org', lmsOrg || '');
+
+    try {
+      var response = await fetch(lmsApiUrl + '?wstoken=' + encodeURIComponent(lmsToken) + '&wsfunction=ws_get_courselist&moodlewsrestformat=json', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: body.toString()
+      });
+
+      if (!response.ok) {
+        throw new Error('LMS request failed with status ' + response.status);
+      }
+
+      var data = await response.json();
+      var items = Array.isArray(data && data.courses) ? data.courses : [];
+
+      if (items.length) {
+        var cards = buildLmsProgramCards(items, lang, courseUrlTemplate, assetPrefix);
+        // wrap in track for slider
+        container.innerHTML = '<div class="programs__track">' + cards + '</div>';
+        if (items.length > 4) {
+          initProgramsSlider(container);
+        } else {
+          initProgramCards(container);
+        }
+      } else {
+        container.innerHTML = '<p class="programs__note reveal">No training programs available right now.</p>';
+      }
+    } catch (error) {
+      console.warn('Failed to load LMS training programs:', error);
+      container.innerHTML = '<p class="programs__note reveal">Training programs are temporarily unavailable.</p>';
+    }
+  }
+
+  async function loadDynamicContent() {
+    var config = getConfig();
+    var apiBase = config.apiUrl;
+    var assetPrefix = config.assetUrl;
+    var tenantCode = config.tenantCode;
+
     var path = window.location.pathname.replace(/^\//g, '').replace(/\/$/g, '').trim();
     var slugParam = path ? '&slug=' + encodeURIComponent(path) : '';
-    var apiUrl = API_BASE + '?tenantCode=' + encodeURIComponent(TENANT_CODE) + slugParam + '&type=all';
+    var apiUrl = apiBase + '?tenantCode=' + encodeURIComponent(tenantCode) + slugParam + '&type=all';
 
     try {
       var response = await fetch(apiUrl);
-      if (!response.ok) return;
+      if (!response.ok) {
+        console.warn('DTC content fetch failed:', response.status, response.statusText);
+        return;
+      }
+
       var payload = await response.json();
       var data = payload.data || payload;
       var page = data.page || {};
       var lang = getCurrentLang();
 
-      var hero = page.hero || {};
-      setHTML('#heroTitle', lang === 'ar' ? hero.titleAr || hero.titleEn : hero.titleEn || hero.titleAr);
-      setText('#heroSubtitle', lang === 'ar' ? hero.subtitleAr || hero.subtitleEn : hero.subtitleEn || hero.subtitleAr);
-      setAttr('#heroCtaPrimary', 'href', hero.ctaUrl);
-      setText('#heroCtaPrimary span', lang === 'ar' ? hero.ctaTextAr || hero.ctaTextEn : hero.ctaTextEn || hero.ctaTextAr);
-      setAttr('#heroCtaSecondary', 'href', hero.secondaryCtaUrl);
-      setText('#heroCtaSecondary', lang === 'ar' ? hero.secondaryCtaTextAr || hero.secondaryCtaTextEn : hero.secondaryCtaTextEn || hero.secondaryCtaTextAr);
-      var heroImageUrl = resolveAssetUrl(hero.image, assetPrefix);
-      if (hasValue(heroImageUrl)) setAttr('#heroImage', 'src', heroImageUrl);
-
       var layout = data.layout || {};
       var tenant = data.tenant || {};
-      var portalBranding = (tenant.branding && tenant.branding.portal) || {};
+      var portalBranding = tenant.branding || {};
       var logoEnUrl = resolveAssetUrl(portalBranding.logoEn, assetPrefix);
       var logoArUrl = resolveAssetUrl(portalBranding.logoAr, assetPrefix);
+      var logoMarkUrl = resolveAssetUrl(portalBranding.logoMark, assetPrefix);
       if (hasValue(logoEnUrl)) setAttr('.brand__logo--full.brand__logo--en', 'src', logoEnUrl);
       if (hasValue(logoArUrl)) setAttr('.brand__logo--full.brand__logo--ar', 'src', logoArUrl);
-      if (hasValue(logoEnUrl)) setAttr('.footer__logo--en', 'src', logoEnUrl);
-      if (hasValue(logoArUrl)) setAttr('.footer__logo--ar', 'src', logoArUrl);
+      if (hasValue(logoMarkUrl)) setAttr('.brand__logo--mark', 'src', logoMarkUrl);
 
       var navLinks = (layout.header && layout.header.navLinks) || [];
       if (navLinks.length) {
         renderItems('.nav__list', buildNavLinks(navLinks, lang));
         attachNavLinkCloseListeners();
+        initScrollSpy();
+        syncNavState();
       }
 
       var footerSocialLinks = (layout.footer && layout.footer.socialLinks) || [];
@@ -329,50 +653,50 @@ var assetPrefix =
         addressNode.textContent = address;
       }
 
-      var about = page.about || {};
-      var aboutImageUrl = resolveAssetUrl(about.image, assetPrefix);
-      if (hasValue(aboutImageUrl)) setAttr('#aboutImage', 'src', aboutImageUrl);
-      setHTML('#aboutHeading', lang === 'ar' ? about.headingAr || about.headingEn : about.headingEn || about.headingAr);
-      setText('#aboutLead', lang === 'ar' ? about.descriptionAr || about.descriptionEn : about.descriptionEn || about.descriptionAr);
+      var blocks = Array.isArray(page.blocks) ? page.blocks : [];
+      renderBlocks(blocks, lang, assetPrefix);
 
-      var aboutItems = (about.additionalSections || []).map(function (item) {
-        return {
-          title: lang === 'ar' ? item.titleAr || item.titleEn : item.titleEn || item.titleAr,
-          content: lang === 'ar' ? item.contentAr || item.contentEn : item.contentEn || item.contentAr,
-        };
-      });
-      if (aboutItems.length) {
-        renderItems('#aboutAccordion', buildAboutItems(aboutItems));
-        initAccordion(document.getElementById('aboutAccordion'));
+      function setSectionVisibility(sectionId, hasContent) {
+        var section = document.getElementById(sectionId);
+        if (section) {
+          section.hidden = !hasContent;
+        }
       }
 
-      var services = page.servicesContext || {};
-      setText('#solutionsHeading', lang === 'ar' ? services.headingAr || services.headingEn : services.headingEn || services.headingAr);
-      setText('#solutionsDescription', lang === 'ar' ? services.descriptionAr || services.descriptionEn : services.descriptionEn || services.descriptionAr);
-
-      var serviceItems = sortByDisplayOrder(services.servicesList || []).map(function (service) {
-        return {
-          title: lang === 'ar' ? service.titleAr || service.titleEn : service.titleEn || service.titleAr,
-          description: lang === 'ar' ? service.descriptionAr || service.descriptionEn : service.descriptionEn || service.descriptionAr,
-        };
+      var aboutBlock = blocks.find(function (block) {
+        return String(block.blockType || '').toLowerCase() === 'aboutblock';
       });
-      if (serviceItems.length) {
-        renderItems('#solutionsList', buildServiceItems(serviceItems));
-      }
-
-      var faqs = page.faqsContext || {};
-      var faqItems = sortByDisplayOrder(faqs.faqsList || []).map(function (faq) {
-        return {
-          question: lang === 'ar' ? faq.questionAr || faq.questionEn : faq.questionEn || faq.questionAr,
-          answer: lang === 'ar' ? faq.answerAr || faq.answerEn : faq.answerEn || faq.answerAr,
-        };
+      var servicesBlock = blocks.find(function (block) {
+        return String(block.blockType || '').toLowerCase() === 'servicesblock';
       });
-      if (faqItems.length) {
-        renderItems('#faqAccordion', buildFaqItems(faqItems));
-        initAccordion(document.getElementById('faqAccordion'));
+      var faqsBlock = blocks.find(function (block) {
+        return String(block.blockType || '').toLowerCase() === 'faqsblock';
+      });
+
+      var aboutItems = aboutBlock && aboutBlock.content && Array.isArray(aboutBlock.content.additionalSections)
+        ? aboutBlock.content.additionalSections
+        : [];
+      var servicesItems = servicesBlock && servicesBlock.content && Array.isArray(servicesBlock.content.servicesList)
+        ? servicesBlock.content.servicesList
+        : [];
+      var faqsItems = faqsBlock && faqsBlock.content && Array.isArray(faqsBlock.content.faqsList)
+        ? faqsBlock.content.faqsList
+        : [];
+
+      setSectionVisibility('about', aboutItems.length > 0);
+      setSectionVisibility('solutions', servicesItems.length > 0);
+      setSectionVisibility('faqs', faqsItems.length > 0);
+
+      var footerData = layout.footer || {};
+      var footerCopyText = lang === 'ar'
+        ? footerData.copyrightTextAr || footerData.copyrightTextEn
+        : footerData.copyrightTextEn || footerData.copyrightTextAr;
+      if (hasValue(footerCopyText)) {
+        var footerCopyEl = document.querySelector('[data-i18n-html="footer.copy"]');
+        if (footerCopyEl) {
+          footerCopyEl.innerHTML = footerCopyText + ' <span id="year">' + new Date().getFullYear() + '</span>';
+        }
       }
-      setText('#faqHeading', lang === 'ar' ? faqs.headingAr || faqs.headingEn : faqs.headingEn || faqs.headingAr);
-      setText('#faqDescription', lang === 'ar' ? faqs.descriptionAr || faqs.descriptionEn : faqs.descriptionEn || faqs.descriptionAr);
 
       var seo = page.seo || {};
       if (lang === 'ar') {
@@ -391,11 +715,20 @@ var assetPrefix =
   try { saved = localStorage.getItem("dtc-lang") || "en"; } catch (e) {}
   applyLang(saved);
   loadDynamicContent();
+  
+  var initialConfig = getConfig();
+  loadLmsPrograms(getCurrentLang(), initialConfig.assetUrl);
 
   var langToggle = document.getElementById("langToggle");
   if (langToggle) {
     langToggle.addEventListener("click", function () {
       applyLang(docEl.lang === "ar" ? "en" : "ar");
+      var loaderEl = document.getElementById('appLoader');
+      if (loaderEl) loaderEl.classList.remove('is-hidden');
+      loadDynamicContent();
+      
+      var currentConfig = getConfig();
+      loadLmsPrograms(getCurrentLang(), currentConfig.assetUrl);
     });
   }
 
@@ -438,12 +771,23 @@ var assetPrefix =
 
   function attachNavLinkCloseListeners() {
     if (!nav) return;
-    nav.querySelectorAll("a").forEach(function (a) {
-      a.addEventListener("click", function () {
+    nav.querySelectorAll('.nav__link').forEach(function (a) {
+      a.addEventListener('click', function () {
+        setActiveNavLink(a.getAttribute('href'));
         if (window.innerWidth <= 980) closeNav();
       });
     });
   }
+
+  document.querySelectorAll(".brand").forEach(function (brandLogo) {
+    brandLogo.addEventListener("click", function () {
+      document.querySelectorAll(".nav__link").forEach(function (link) {
+        link.classList.remove("is-active");
+      });
+      var homeLink = document.querySelector(".nav__list li:first-child .nav__link") || document.querySelector('.nav__link[href^="#home"]');
+      if (homeLink) homeLink.classList.add("is-active");
+    });
+  });
 
   // Mobile submenu expand
   document.querySelectorAll(".nav__caret").forEach(function (btn) {
@@ -501,17 +845,23 @@ var assetPrefix =
   });
 
   /* ---------------- Program expander ---------------- */
-  var programs = document.querySelectorAll(".program");
-  var canHover = window.matchMedia("(hover: hover)").matches;
-  function activateProgram(el) {
-    programs.forEach(function (p) { p.classList.toggle("is-active", p === el); });
-  }
-  programs.forEach(function (el) {
-    el.addEventListener("click", function () { activateProgram(el); });
-    if (canHover) {
-      el.addEventListener("mouseenter", function () { activateProgram(el); });
+  function initProgramCards(root) {
+    var scope = root || document;
+    var programs = scope.querySelectorAll(".program");
+    var canHover = window.matchMedia("(hover: hover)").matches;
+
+    function activateProgram(el) {
+      programs.forEach(function (p) { p.classList.toggle("is-active", p === el); });
     }
-  });
+
+    programs.forEach(function (el) {
+      el.addEventListener("click", function () { activateProgram(el); });
+      if (canHover) {
+        el.addEventListener("mouseenter", function () { activateProgram(el); });
+      }
+    });
+  }
+  initProgramCards();
 
   /* ---------------- Contact form ---------------- */
   var form = document.getElementById("contactForm");
@@ -575,23 +925,35 @@ var assetPrefix =
   }
 
   /* ---------------- Scrollspy ---------------- */
-  var navLinks = Array.prototype.slice.call(document.querySelectorAll(".nav__link[href^='#']"));
-  var sections = navLinks
-    .map(function (l) { return document.querySelector(l.getAttribute("href")); })
-    .filter(Boolean);
-  if ("IntersectionObserver" in window && sections.length) {
-    var spy = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          var id = "#" + entry.target.id;
-          navLinks.forEach(function (l) {
-            l.classList.toggle("is-active", l.getAttribute("href") === id);
-          });
-        }
-      });
-    }, { rootMargin: "-45% 0px -50% 0px", threshold: 0 });
-    sections.forEach(function (s) { spy.observe(s); });
+  function initScrollSpy() {
+    var navLinks = getNavLinks();
+    var sections = navLinks
+      .map(function (l) { return document.querySelector(l.getAttribute('href')); })
+      .filter(Boolean);
+
+    if ('IntersectionObserver' in window && sections.length) {
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            setActiveNavLink('#' + entry.target.id);
+          }
+        });
+      }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+      sections.forEach(function (s) { spy.observe(s); });
+    }
   }
+
+  function syncNavState() {
+    setActiveNavLink(window.location.hash || '#home');
+    if (window.location.hash) {
+      scrollToHashTarget(window.location.hash);
+    }
+  }
+
+  window.addEventListener('hashchange', function () {
+    setActiveNavLink(window.location.hash || '#home');
+    scrollToHashTarget(window.location.hash || '#home');
+  });
 
   /* ---------------- Back to top ---------------- */
   var toTop = document.getElementById("toTop");
@@ -605,3 +967,12 @@ var assetPrefix =
     });
   }
 })();
+
+
+window.addEventListener('load', () => {
+    const loader = document.getElementById('pageLoader');
+
+    setTimeout(() => {
+        loader.classList.add('is-hidden');
+    }, 1200);
+});
